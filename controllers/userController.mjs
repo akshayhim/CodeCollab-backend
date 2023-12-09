@@ -1,10 +1,12 @@
+// import dotenv from "dotenv";
+
+// dotenv.config();
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.mjs";
 import { Op } from "sequelize";
-import dotenv from "dotenv";
 
-dotenv.config();
+// const { JWT_SECRET_KEY } = process.env;
 
 // Function to generate a JWT token
 function generateToken(User) {
@@ -13,7 +15,8 @@ function generateToken(User) {
     username: User.username,
     email: User.email,
   };
-  const secretKey = process.env.JWT_SECRET_KEY;
+  const secretKey =
+    "3ea4de9d416737468696bcb61b518f8f59ba98fc925c7369b61c0974e5fceb69";
   const options = { expiresIn: "1h" }; // Token expiration time (1 hour in this example)
   return jwt.sign(payload, secretKey, options);
 }
@@ -59,10 +62,10 @@ export async function registerUser(req, res) {
 // Controller function to authenticate a user
 export async function authenticateUser(req, res) {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     // Find the user in the database based on the username
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
