@@ -51,8 +51,9 @@ export async function registerUser(req, res) {
 
     // Generate a JWT token for the newly registered user
     const token = generateToken(newUser);
+    res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
 
-    return res.status(201).json({ User: newUser, token });
+    return res.status(201).json({ token });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -80,8 +81,9 @@ export async function authenticateUser(req, res) {
 
     // Generate a JWT token for the authenticated user
     const token = generateToken(user);
+    res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
 
-    return res.status(200).json({ user, token });
+    return res.status(200).json({ token });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
