@@ -31,16 +31,20 @@ io.on("connection", (socket) => {
     socket.join(roomId);
     const clients = getAllConnectedClients(roomId);
     clients.forEach(({ socketId }) => {
-      io.to(socketId).emit("join", {
+      io.to(socketId).emit("joined", {
         clients,
         username,
-        socketId: socketId,
+        socketId: socket.id,
       });
     });
   });
 
   socket.on("code-change", ({ roomId, code }) => {
     socket.in(roomId).emit("code-change", { code });
+  });
+
+  socket.on("sync-code", ({ socketId, code }) => {
+    io.to(socketId).emit("code-change", { code });
   });
 
   socket.on("disconnecting", () => {
