@@ -1,56 +1,65 @@
-// import dotenv from "dotenv";
-
-// dotenv.config();
+import "dotenv/config";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/user.mjs";
-import { Op } from "sequelize";
+import { createClient } from "@supabase/supabase-js";
 
-// const { JWT_SECRET_KEY } = process.env;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Function to generate a JWT token
-function generateToken(User) {
+function generateToken(user) {
   const payload = {
-    userId: User.id,
-    username: User.username,
-    email: User.email,
+    userId: user.userId,
+    username: user.username,
+    email: user.email,
   };
-  const secretKey =
-    "3ea4de9d416737468696bcb61b518f8f59ba98fc925c7369b61c0974e5fceb69";
+  const secretKey = process.env.JWT_SECRET_KEY;
   const options = { expiresIn: "1h" }; // Token expiration time (1 hour in this example)
   return jwt.sign(payload, secretKey, options);
 }
 
-// Controller function to register a new user
 export async function registerUser(req, res) {
   try {
     const { username, email, password } = req.body;
+    // console.log(username);
 
     // Check if the username or email is already taken
-    const existingUser = await User.findOne({
-      where: {
-        [Op.or]: [{ username }, { email }],
-      },
-    });
+    const { data: existingUser, error } = await supabase
+      .from("Users")
+      .select()
+      .eq("email", email);
 
-    if (existingUser) {
+    // console.log({ existingUser });
+
+    if (existingUser !== null && existingUser.length !== 0) {
       return res
         .status(400)
-        .json({ error: "Username or email is already taken." });
+        .json({ error: "Email is already associated with an account." });
+      // console.log(error);
     }
 
     // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds: 10
 
     // Create a new user in the database
-    const newUser = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
+    const { data: newUser, error: createUserError } = await supabase
+      .from("Users")
+      .upsert({
+        username,
+        email,
+        password: hashedPassword,
+      })
+      .select();
+
+    // console.log(newUser);
+
+    if (createUserError) {
+      console.error(createUserError);
+      return res.status(500).json({ error: "error in creating user" });
+    }
 
     // Generate a JWT token for the newly registered user
-    const token = generateToken(newUser);
+    const token = newUser ? generateToken(newUser[0]) : null;
     res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
 
     return res.status(201).json({ token });
@@ -65,18 +74,21 @@ export async function authenticateUser(req, res) {
   try {
     const { email, password } = req.body;
 
-    // Find the user in the database based on the username
-    const user = await User.findOne({ where: { email } });
+    // Find the user in the database based on the email
+    const { data: users, error } = await supabase
+      .from("Users")
+      .select("userId, username, email, password")
+      .eq("email", email);
+
+    const user = users ? users[0] : null;
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      throw res.status(401).json({ error: "Invalid credentials" });
     }
-
-    // Compare the provided password with the hashed password stored in the database
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      throw res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Generate a JWT token for the authenticated user

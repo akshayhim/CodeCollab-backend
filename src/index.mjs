@@ -1,7 +1,6 @@
 import express from "express";
 const app = express();
 import http from "http";
-import path from "path";
 import { Server } from "socket.io";
 
 const server = http.createServer(app);
@@ -69,22 +68,3 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api", router);
-
-// socket.on("startEditing", (fileId) => {
-//   // Broadcast to all clients except the sender
-//   socket.broadcast.emit("userStartedEditing", fileId);
-// });
-
-// socket.on("stopEditing", (fileId) => {
-//   // Broadcast to all clients except the sender
-//   socket.broadcast.emit("userStoppedEditing", fileId);
-// });
-
-// socket.on("contentChange", ({ fileId, newContent }) => {
-//   // Broadcast the new content to all clients except the sender
-//   socket.broadcast.emit("contentChanged", { fileId, newContent });
-// });
-
-// socket.on("disconnect", () => {
-//   console.log("User disconnected");
-// });
