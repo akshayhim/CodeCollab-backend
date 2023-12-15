@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "start": "node src/index.mjs",
-    "build": "babel . -d dist --extensions .mjs"
+    "build": "babel . -d build --extensions .mjs"
   },
   "author": "",
   "license": "ISC",
