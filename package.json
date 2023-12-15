@@ -5,7 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "npm build"
   },
   "author": "",
   "license": "ISC",
@@ -22,8 +23,6 @@
     "jsonwebtoken": "^9.0.2",
     "path": "^0.12.7",
     "pg": "^8.11.3",
-    "sequelize": "^6.33.0",
-    "sequelize-cli": "^6.6.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "telnet": "^0.0.1"
