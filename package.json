@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "start": "node src/index.mjs",
-    "build": "npm build"
+    "build": "babel . -d dist --extensions .mjs"
   },
   "author": "",
   "license": "ISC",
@@ -29,8 +29,9 @@
     "telnet": "^0.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
-    "@babel/preset-env": "^7.23.2",
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0"
   },
