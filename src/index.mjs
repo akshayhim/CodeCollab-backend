@@ -65,6 +65,11 @@ server.listen(PORT, () => {
 });
 
 app.use(express.json());
-app.use(cors());
-
+app.use(
+  cors({
+    origin: "https://codecollab-akshayhim.vercel.app",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    headers: "Content-Type, Authorization",
+  })
+);
 app.use("/api", router);
