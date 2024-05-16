@@ -1,3 +1,5 @@
+*this is the backend repo, the frontend has a separate repo*
+
 **CodeCollab**
 A collaborative code editor in the browser allows multiple users to join a room from various devices, enabling them to write code or fix bugs in real-time while the code is synced across all users.
 
